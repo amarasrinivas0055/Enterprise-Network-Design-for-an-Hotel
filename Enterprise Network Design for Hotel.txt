@@ -1,0 +1,695 @@
+Enterprise Network Design for Hotel
+===================================
+
+Overview :
+---------
+The enterprise network for the hotel is designed to provide efficient communication and management across its three floors. With a focus on scalability, security, and seamless interdepartmental collaboration, the network architecture optimizes performance and productivity for all hotel operations.
+
+Floor-wise Departments :
+------------------------
+
+First Floor :-
+
+Reception: VLAN 80, Network of 192.168.8.0/24
+Store: VLAN 70, Network of 192.168.7.0/24
+Logistics: VLAN 60, Network of 192.168.6.0/24
+
+Second Floor :-
+
+Finance: VLAN 50, Network of 192.168.5.0/24
+HR: VLAN 40, Network of 192.168.4.0/24
+Sales/Marketing: VLAN 30, Network of 192.168.3.0/24
+
+Third Floor :-
+
+Admin: VLAN 20, Network of 192.168.2.0/24
+IT: VLAN 10, Network of 192.168.1.0/24
+
+Network Infrastructure :-
+Each floor is equipped with a switch and a router to ensure seamless connectivity and routing capabilities. Key network features include:
+
+VLAN Segmentation:
+Utilized separate VLANs for each department to enhance network security and manageability.
+Inter-VLAN Routing:
+Implemented router-on-a-stick protocol for inter-VLAN communication, enabling efficient data exchange between departments.
+Dynamic IP Assignment:
+Configured DHCP protocol in each router to dynamically assign IP addresses to end devices, ensuring hassle-free network connectivity.
+Routing Protocol:
+Deployed OSPF for dynamic routing, facilitating efficient data exchange and fault tolerance.
+Security Measures:
+Implemented port security for the IT department to restrict unauthorized access and enhance network security.
+Remote Access:
+Enabled SSH configuration for remote login to network devices, ensuring secure management and monitoring.
+
+Conclusion :-
+The enterprise network design for the hotel reflects a commitment to efficiency, security, and scalability. By leveraging advanced networking technologies and best practices, the hotel can optimize its operations, enhance guest experiences, and stay competitive in the hospitality industry.
+
+
+
+
+NETWORK CONFIGERATION:-
+=======================
+
+===========================================================================================================================================================================================
+
+
+floor-1
+=======
+
+===================================================================================================================================================================================
+
+router-1
+========
+
+
+hostname floor-1
+
+
+ASSIGNING IP ADDRESS FOR ROUTER PORTS:-
+--------------------------------------
+
+
+int se 0/3/0
+
+ip add 10.10.10.5 255.255.255.252
+
+no shut
+
+clock rate 64000
+
+exit
+
+
+int se 0/3/1
+
+ip add 10.10.10.1 255.255.255.252
+
+no shut
+
+exit
+
+
+int gig 0/2
+
+no sh 
+
+exit
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+INTER VLAN ROUTING:-
+-------------------
+
+
+int gig 0/2.60
+
+encapsulation dot1q 60
+
+ip add 192.168.6.1 255.255.255.0
+
+exit
+
+
+int gig 0/2.70
+
+encapsulation dot1q 70
+
+ip add 192.168.7.1 255.255.255.0
+
+exit
+
+
+int gig 0/2.80
+
+encapsulation dot1q 80
+
+ip add 192.168.8.1 255.255.255.0
+
+exit
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+DHCP CONFIGERATION:-
+-------------------
+
+
+service dhcp
+
+
+ip dhcp pool logistics
+
+network 192.168.6.0 255.255.255.0
+
+default-router 192.168.6.1 
+
+dns-server 192.168.6.1 
+
+exit 
+
+
+ip dhcp pool store
+
+network 192.168.7.0 255.255.255.0
+
+default-router 192.168.7.1 
+
+dns-server 192.168.7.1 
+
+exit 
+
+
+ip dhcp pool reception
+
+network 192.168.8.0 255.255.255.0
+
+default-router 192.168.8.1 
+
+dns-server 192.168.8.1 
+
+exit 
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+OSPF ROUTING PROTOCOL:-
+----------------------
+
+
+router ospf 10
+
+network 192.168.6.0 255.255.255.0 area 0
+
+network 192.168.7.0 255.255.255.0 area 0
+
+network 192.168.8.0 255.255.255.0 area 0
+
+network 10.10.10.4 255.255.255.252 area 0
+
+network 10.10.10.0 255.255.255.252 area 0
+
+exit
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+SSH CONFIGEARION:-
+-----------------
+
+
+ip domain-name hotel
+
+username srinu password srinu 
+
+crypto key generate rsa 1024
+
+
+line vty 0 15
+
+login local 
+
+transport input ssh 
+
+do wr
+
+=======================================================================================================================================================================================
+
+
+switch-1 
+========
+
+
+hostname floor-1
+
+
+CREATING VLAN'S:-
+-----------------
+
+
+vlan 60
+
+name logistics
+
+exit
+
+
+vlan 70
+
+name store 
+
+exit
+
+
+vlan 80
+
+name reception
+
+exit
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ASSIGNING VLAN'S FOR SWITCH PORTS:-
+----------------------------------
+
+
+int range fa0/2-3
+
+switchport mode access
+
+switchport access vlan 60
+
+exit
+
+
+int range fa0/4-5
+
+switchport mode access
+
+switchport access vlan 70
+
+exit
+
+
+int range fa0/6-7
+
+switchport mode access
+
+switchport access vlan 80
+
+exit
+
+============================================================================================================================================================================================
+
+floor-2
+=======
+
+=====================================================================================================================================================================================
+
+router-2
+========
+
+
+hostname floor-2
+
+
+ASSIGNING IP ADDRESS FOR ROUTER PORTS:-
+--------------------------------------
+
+int se 0/3/1
+
+ip add 10.10.10.2 255.255.255.252
+
+clock rate 64000
+
+no shut
+
+exit
+
+
+int se 0/3/0
+
+ip add 10.10.10.10 255.255.255.252
+
+no shut
+
+exit
+
+
+int gig 0/2
+
+no sh 
+
+exit
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+INTER VLAN ROUTING:-
+-------------------
+
+int gig 0/2.30
+
+encapsulation dot1q 30
+
+ip add 192.168.3.1 255.255.255.0
+
+exit
+
+
+int gig 0/2.40
+
+encapsulation dot1q 40
+
+ip add 192.168.4.1 255.255.255.0
+
+exit
+
+
+int gig 0/2.50
+
+encapsulation dot1q 50
+
+ip add 192.168.5.1 255.255.255.0
+
+exit
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+DHCP CONFIGERATION:-
+--------------------
+
+service dhcp
+
+
+ip dhcp pool sales
+
+network 192.168.3.0 255.255.255.0
+
+default-router 192.168.3.1 
+
+dns-server 192.168.3.1 
+
+exit 
+
+
+ip dhcp pool HR
+
+network 192.168.4.0 255.255.255.0
+
+default-router 192.168.4.1 
+
+dns-server 192.168.4.1 
+
+exit 
+
+
+ip dhcp pool finance 
+
+network 192.168.5.0 255.255.255.0
+
+default-router 192.168.5.1 
+
+dns-server 192.168.5.1 
+
+exit 
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+OSPF ROUTING PROTOCOL:-
+-----------------------
+
+router ospf 10
+
+network 192.168.3.0 255.255.255.0 area 0
+
+network 192.168.4.0 255.255.255.0 area 0
+
+network 192.168.5.0 255.255.255.0 area 0
+
+network 10.10.10.0 255.255.255.252 area 0
+
+network 10.10.0.8 255.255.255.252 area 0
+
+exit
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+SSH CONFIGEARION:-
+------------------
+
+
+ip domain-name hotel
+
+username srinu password srinu 
+
+crypto key generate rsa 1024
+
+
+line vty 0 15
+
+login local 
+
+transport input ssh 
+
+do wr
+
+==============================================================================================================================================================================
+
+switch-2
+=========
+
+hostname floor-2
+
+
+CREATING VLAN'S:-
+-----------------
+
+vlan 30
+
+name sales
+
+exit
+
+
+vlan 40
+
+name HR
+
+exit
+
+
+vlan 50 
+
+name finance 
+
+exit
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ASSIGNING VLAN'S FOR SWITCH PORTS:-
+----------------------------------
+
+
+int range fa0/3-4
+
+switchport mode access
+
+switchport access vlan 30
+
+exit
+
+
+int range fa0/5-6
+
+switchport mode access
+
+switchport access vlan 40
+
+exit
+
+
+int range fa0/7-8
+
+switchport mode access
+
+switchport access vlan 50
+
+exit
+
+==========================================================================================================================================================================================
+
+floor-3
+=======
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+router-3
+==========
+
+
+hostname floor-3
+
+
+ASSIGNING IP ADDRESS FOR ROUTER PORTS:-
+--------------------------------------
+
+int se 0/3/1
+
+ip add 10.10.10.9 255.255.255.252
+
+clock rate 64000
+
+no sh
+
+exit
+
+
+int se 0/3/0
+
+ip add 10.10.10.6 255.255.255.252
+
+no sh
+
+exit
+
+
+int gig 0/1
+
+no sh
+
+exit
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+INTER VLAN ROUTING:-
+-------------------
+
+int gig 0/1.10                                                                              
+
+encapsulation dot1q 10
+
+ip add 192.168.1.1 255.255.255.0
+
+exit
+
+
+int gig 0/1.20
+
+encapsulation dot1q 20
+
+ip add 192.168.2.1 255.255.255.0
+
+exit
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+DHCP CONFIGERATION:-
+--------------------
+
+service dhcp
+
+
+ip dhcp pool IT
+
+network 192.168.1.0 255.255.255.0
+
+default-router 192.168.1.1 
+
+dns-server 192.168.1.1 
+
+exit 
+
+
+ip dhcp pool admin
+
+network 192.168.2.0 255.255.255.0
+
+default-router 192.168.2.1 
+
+dns-server 192.168.2.1 
+
+exit 
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+OSPF ROUTING PROTOCOL:-
+-----------------------
+
+router ospf 10
+
+network 192.168.1.0 255.255.255.0 area 0
+
+network 192.168.2.0 255.255.255.0 area 0
+
+network 10.10.10.4 255.255.255.252 area 0
+
+network 10.10.10.8 255.255.255.252 area 0
+
+exit
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+SSH CONFIGEARION:-
+------------------
+
+ip domain-name hotel
+
+username srinu password srinu 
+
+crypto key generate rsa 1024
+
+
+line vty 0 15
+
+login local 
+
+transport input ssh 
+
+do wr
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+PORT SECURITY:-
+---------------
+
+int fa0/2
+
+switchport port-security maximum 1
+
+switchport port-security mac-address sticky 
+
+switchport  port-security violation shutdown
+
+==============================================================================================================================================================================
+
+switch 3
+========
+
+
+hostname floor-3
+
+
+CREATING VLAN'S:-
+-----------------
+
+vlan 10
+
+name it
+
+exit
+
+
+vlan 20
+
+name admin
+
+exit
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ASSIGNING VLAN'S FOR SWITCH PORTS:-
+----------------------------------
+
+int range fa0/2-3
+
+switchport mode access
+
+switchport access vlan 10
+
+exit
+
+
+int range fa0/4-5
+
+switchport mode access
+
+switchport access vlan 20
+
+exit
+
+
+
+
+
+
+
+
+
